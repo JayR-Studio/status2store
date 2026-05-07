@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ settings.business_name if settings else "Status2Store" }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap"
+          rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
+</head>
+<body class="theme-{{ settings.theme if settings and settings.theme else 'luxury' }}">
+
+<header class="site-header">
+    <div class="container nav-wrapper">
+
+        <a href="{{ url_for('index') }}" class="logo">
+            {{ settings.business_name if settings else "Status2Store" }}
+        </a>
+
+        <nav class="desktop-nav">
+            <a href="{{ url_for('index') }}">Home</a>
+            <a href="{{ url_for('catalogue') }}">Catalogue</a>
+            <a href="#how-to-order">How to Order</a>
+            <a href="#contact">Contact</a>
+        </nav>
+
+        {% if settings and settings.whatsapp_number %}
+        <a
+            href="https://wa.me/{{ settings.whatsapp_number }}"
+            class="nav-whatsapp"
+            target="_blank"
+        >
+            WhatsApp
+        </a>
+        {% endif %}
+
+        <button class="menu-toggle" id="menuToggle" aria-label="Open menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+    </div>
+</header>
+
+<div class="mobile-menu" id="mobileMenu">
+    <a href="{{ url_for('index') }}">Home</a>
+    <a href="{{ url_for('catalogue') }}">Catalogue</a>
+    <a href="#how-to-order">How to Order</a>
+    <a href="#contact">Contact</a>
+
+    {% if settings and settings.whatsapp_number %}
+    <a
+        href="https://wa.me/{{ settings.whatsapp_number }}"
+        class="mobile-whatsapp"
+        target="_blank"
+    >
+        Chat on WhatsApp
+    </a>
+    {% endif %}
+</div>
+
+<main>
+    {% block content %}{% endblock %}
+</main>
+
+<footer class="site-footer" id="contact">
+    <div class="container footer-grid">
+        <div>
+            <h2>{{ settings.business_name if settings else "Status2Store" }}</h2>
+            <p>
+                {{ settings.about_text if settings and settings.about_text else "A premium catalogue website for stylish
+                WhatsApp and Instagram vendors." }}
+            </p>
+        </div>
+
+        <div>
+            <h3>Quick Links</h3>
+            <a href="{{ url_for('index') }}">Home</a>
+            <a href="{{ url_for('catalogue') }}">Catalogue</a>
+            <a href="#how-to-order">How to Order</a>
+        </div>
+
+        <div>
+            <h3>Contact</h3>
+
+            {% if settings and settings.whatsapp_number %}
+            <a href="https://wa.me/{{ settings.whatsapp_number }}" target="_blank">
+                Chat on WhatsApp
+            </a>
+            {% endif %}
+
+            {% if settings and settings.instagram_url %}
+            <a href="{{ settings.instagram_url }}" target="_blank">
+                Instagram
+            </a>
+            {% endif %}
+
+            {% if settings and settings.location %}
+            <p>{{ settings.location }}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="footer-bottom">
+        <p>&copy; 2026 {{ settings.business_name if settings else "Status2Store" }}. All rights reserved.</p>
+    </div>
+</footer>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="page-hero">
+    <div class="container">
+        <span class="eyebrow">Catalogue</span>
+
+        {% if current_category %}
+        <h1>{{ current_category.name }}</h1>
+        <p>Browse products under {{ current_category.name }}.</p>
+        {% else %}
+        <h1>Our Product Catalogue</h1>
+        <p>Browse available products and order directly through WhatsApp.</p>
+        {% endif %}
+    </div>
+</section>
+
+<section class="container section">
+
+    <form method="GET" action="{{ url_for('catalogue') }}" class="catalogue-tools">
+        <div class="search-box">
+            <input
+                    type="text"
+                    name="search"
+                    value="{{ search or '' }}"
+                    placeholder="Search products..."
+            >
+        </div>
+
+        <div class="filter-chips">
+            <a
+                    href="{{ url_for('catalogue', search=search) }}"
+                    class="{% if not selected_category %}active{% endif %}"
+            >
+                All
+            </a>
+
+            {% for category in categories %}
+            <a
+                    href="{{ url_for('catalogue', category=category.slug, search=search) }}"
+                    class="{% if selected_category == category.slug %}active{% endif %}"
+            >
+                {{ category.name }}
+            </a>
+            {% endfor %}
+        </div>
+
+        <div class="catalogue-actions">
+            <button type="submit" class="btn-primary">Search</button>
+
+            {% if search or selected_category %}
+            <a href="{{ url_for('catalogue') }}" class="btn-secondary">
+                Clear Filter
+            </a>
+            {% endif %}
+        </div>
+    </form>
+
+    <div class="catalogue-result-note">
+        {% if search and current_category %}
+        <p>Showing results for <strong>“{{ search }}”</strong> in <strong>{{ current_category.name }}</strong>.</p>
+        {% elif search %}
+        <p>Showing results for <strong>“{{ search }}”</strong>.</p>
+        {% elif current_category %}
+        <p>Showing products in <strong>{{ current_category.name }}</strong>.</p>
+        {% else %}
+        <p>Showing all available catalogue products.</p>
+        {% endif %}
+    </div>
+
+    <div class="product-grid catalogue-grid">
+        {% for product in products %}
+        <a href="{{ url_for('product_detail', slug=product.slug) }}"
+           class="product-card {% if not product.is_available %}sold-card{% endif %}">
+            <div class="product-image {% if not product.image_url %}image-fallback{% endif %}">
+                {% if product.image_url %}
+                <img src="{{ url_for('static', filename=product.image_url) }}" alt="{{ product.name }}">
+                {% else %}
+                <div class="fallback-content">
+                    <span>{{ product.name[:1] }}</span>
+                    <p>No Image</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="product-info">
+                <span>{{ product.category.name if product.category else "Product" }}</span>
+                <h3>{{ product.name }}</h3>
+                <p>₦{{ "{:,}".format(product.price) }}</p>
+
+                {% if product.is_available %}
+                <small class="status available">In Stock</small>
+                {% else %}
+                <small class="status sold-out">Sold Out</small>
+                {% endif %}
+            </div>
+        </a>
+        {% else %}
+        <div class="empty-state">
+            <h3>No products found.</h3>
+            <p>Try another search term or clear the filter.</p>
+        </div>
+        {% endfor %}
+    </div>
+    {% if pagination.pages > 1 %}
+    <div class="pagination-wrapper">
+        {% if pagination.has_prev %}
+        <a
+                href="{{ url_for('catalogue', page=pagination.prev_num, search=search, category=selected_category) }}"
+                class="pagination-link"
+        >
+            ← Previous
+        </a>
+        {% endif %}
+
+        <div class="pagination-numbers">
+            {% for page_num in pagination.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+            {% if page_num %}
+            <a
+                    href="{{ url_for('catalogue', page=page_num, search=search, category=selected_category) }}"
+                    class="pagination-number {% if page_num == pagination.page %}active{% endif %}"
+            >
+                {{ page_num }}
+            </a>
+            {% else %}
+            <span class="pagination-dots">…</span>
+            {% endif %}
+            {% endfor %}
+        </div>
+
+        {% if pagination.has_next %}
+        <a
+                href="{{ url_for('catalogue', page=pagination.next_num, search=search, category=selected_category) }}"
+                class="pagination-link"
+        >
+            Next →
+        </a>
+        {% endif %}
+    </div>
+    {% endif %}
+</section>
+
+{% endblock %}

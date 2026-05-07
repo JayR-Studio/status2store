@@ -1,0 +1,100 @@
+{% extends "admin/admin_base.html" %}
+
+{% block admin_content %}
+
+<section class="admin-page-content">
+    <div class="admin-page-heading">
+        <div>
+            <span class="eyebrow">Dashboard</span>
+            <h1>Catalogue Overview</h1>
+            <p>Manage your products and keep your online catalogue updated.</p>
+        </div>
+
+        <a href="{{ url_for('admin_add_product') }}" class="btn-primary admin-action-btn">Add Product</a>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <span>Total Products</span>
+            <strong>{{ total_products }}</strong>
+            <p>All products in your catalogue</p>
+        </div>
+
+        <div class="stat-card">
+            <span>Available</span>
+            <strong>{{ available_products }}</strong>
+            <p>Products customers can order</p>
+        </div>
+
+        <div class="stat-card">
+            <span>Sold Out</span>
+            <strong>{{ sold_out_products }}</strong>
+            <p>Products currently unavailable</p>
+        </div>
+
+        <div class="stat-card">
+            <span>Featured</span>
+            <strong>{{ featured_products }}</strong>
+            <p>Products shown on homepage</p>
+        </div>
+    </div>
+
+    <div class="admin-panel">
+        <div class="admin-panel-header">
+            <div>
+                <h2>Recent Products</h2>
+                <p>Latest products added to the catalogue.</p>
+            </div>
+
+            <a href="{{ url_for('admin_products') }}" class="text-link">View all →</a>
+        </div>
+
+        <div class="admin-table-wrapper">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Status</th>
+                        <th>Featured</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for product in recent_products %}
+                        <tr>
+                            <td>
+                                <strong>{{ product.name }}</strong>
+                            </td>
+                            <td>{{ product.category.name if product.category else "No Category" }}</td>
+                            <td>₦{{ "{:,}".format(product.price) }}</td>
+                            <td>
+                                {% if product.is_available %}
+                                    <span class="admin-badge available-badge">Available</span>
+                                {% else %}
+                                    <span class="admin-badge sold-badge">Sold Out</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if product.is_featured %}
+                                    <span class="admin-badge featured-badge">Yes</span>
+                                {% else %}
+                                    <span class="admin-badge neutral-badge">No</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="5" class="empty-table">
+                                No products have been added yet.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

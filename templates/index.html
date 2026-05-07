@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="hero">
+    <div class="container hero-grid">
+        <div class="hero-content">
+            <span class="eyebrow">Premium WhatsApp Catalogue</span>
+
+            <h1>{{ settings.hero_text if settings and settings.hero_text else "Elegant styles, beautifully arranged for
+                easy ordering." }}</h1>
+
+            <p>
+                {{ settings.about_text if settings and settings.about_text else "Browse products, check prices, and
+                order directly on WhatsApp. No stress. No confusion. Just a clean shopping experience." }}
+            </p>
+
+            <div class="hero-actions">
+                <a href="{{ url_for('catalogue') }}" class="btn-primary">View Catalogue</a>
+
+                {% if settings and settings.whatsapp_number %}
+                <a href="https://wa.me/{{ settings.whatsapp_number }}" target="_blank" class="btn-secondary">
+                    Chat on WhatsApp
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="hero-visual">
+            <div class="hero-image-main">
+                {% if settings and settings.hero_image_url %}
+                <img src="{{ url_for('static', filename=settings.hero_image_url) }}" alt="{{ settings.business_name }}">
+                {% endif %}
+            </div>
+            <div class="floating-card">
+                <span>New Arrival</span>
+                <strong>Luxury Satin Dress</strong>
+                <p>₦24,500</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="container section">
+    <div class="section-heading">
+        <span class="eyebrow">Categories</span>
+        <h2>Shop by Category</h2>
+        <p>Quickly browse products based on what you are looking for.</p>
+    </div>
+
+    <div class="category-row">
+        {% for category in categories %}
+        <a href="{{ url_for('catalogue', category=category.slug) }}" class="category-card">
+            <span>{{ category.name[:1] }}</span>
+            <p>{{ category.name }}</p>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="container section">
+    <div class="section-heading split-heading">
+        <div>
+            <span class="eyebrow">Featured</span>
+            <h2>Featured Products</h2>
+            <p>Selected products your customers can browse and order quickly.</p>
+        </div>
+
+        <a href="{{ url_for('catalogue') }}" class="text-link">View all products →</a>
+    </div>
+
+    <div class="product-grid">
+        {% for product in featured_products %}
+        <a href="{{ url_for('product_detail', slug=product.slug) }}" class="product-card">
+            <div class="product-image {% if not product.image_url %}image-fallback{% endif %}">
+                {% if product.image_url %}
+                <img src="{{ url_for('static', filename=product.image_url) }}" alt="{{ product.name }}">
+                {% else %}
+                <div class="fallback-content">
+                    <span>{{ product.name[:1] }}</span>
+                    <p>No Image</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="product-info">
+                <span>{{ product.category.name if product.category else "Product" }}</span>
+                <h3>{{ product.name }}</h3>
+                <p>₦{{ "{:,}".format(product.price) }}</p>
+            </div>
+        </a>
+        {% else %}
+        <div class="empty-state">
+            <h3>No featured products yet.</h3>
+            <p>Once products are added, they will appear here.</p>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="how-section" id="how-to-order">
+    <div class="container">
+        <div class="section-heading center">
+            <span class="eyebrow">Simple Process</span>
+            <h2>How to Order</h2>
+            <p>Your customers do not need to learn anything complicated.</p>
+        </div>
+
+        <div class="steps-grid">
+            <div class="step-card">
+                <span>01</span>
+                <h3>Browse</h3>
+                <p>Customers open your catalogue and view available products.</p>
+            </div>
+
+            <div class="step-card">
+                <span>02</span>
+                <h3>Choose</h3>
+                <p>They select the product they like and open the detail page.</p>
+            </div>
+
+            <div class="step-card">
+                <span>03</span>
+                <h3>Message</h3>
+                <p>They click the WhatsApp button with the product name included.</p>
+            </div>
+
+            <div class="step-card">
+                <span>04</span>
+                <h3>Order</h3>
+                <p>You confirm availability, payment, and delivery directly on WhatsApp.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="trust-section">
+    <div class="container trust-grid">
+        <div>
+            <h3>Fast Delivery</h3>
+            <p>{{ settings.delivery_note if settings and settings.delivery_note else "Delivery available based on vendor
+                location and customer agreement." }}</p>
+        </div>
+
+        <div>
+            <h3>Easy Payment</h3>
+            <p>{{ settings.payment_note if settings and settings.payment_note else "Payment details are confirmed
+                directly with the vendor." }}</p>
+        </div>
+
+        <div>
+            <h3>WhatsApp First</h3>
+            <p>Customers complete their order through the WhatsApp chat they already trust.</p>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Login | {{ settings.business_name if settings else "Status2Store" }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="login-body">
+
+<section class="login-page">
+    <div class="login-card">
+        <a href="{{ url_for('index') }}" class="login-logo">
+            {{ settings.business_name if settings else "Status2Store" }}
+        </a>
+
+        <div class="login-heading">
+            <span class="eyebrow">Vendor Admin</span>
+            <h1>Welcome back</h1>
+            <p>Log in to manage your catalogue products.</p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-wrapper login-flash">
+                    {% for category, message in messages %}
+                        <div class="flash-message {{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST" class="login-form">
+            <div class="form-group">
+                <label for="email">Email address</label>
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="admin@status2store.com"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Enter password"
+                    required
+                >
+            </div>
+
+            <button type="submit" class="btn-primary login-btn">
+                Login
+            </button>
+        </form>
+
+        <p class="login-note">
+            This area is for the business owner only.
+        </p>
+    </div>
+</section>
+
+</body>
+</html>

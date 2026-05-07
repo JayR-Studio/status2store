@@ -1,0 +1,96 @@
+{% extends "admin/admin_base.html" %}
+
+{% block admin_content %}
+
+<section class="admin-page-content">
+    <div class="admin-page-heading">
+        <div>
+            <span class="eyebrow">Add Product</span>
+            <h1>New Product</h1>
+            <p>Add a new item to your catalogue.</p>
+        </div>
+
+        <a href="{{ url_for('admin_products') }}" class="btn-secondary admin-action-btn">
+            Back to Products
+        </a>
+    </div>
+
+    <div class="admin-form-panel">
+        <form method="POST" class="admin-form" enctype="multipart/form-data">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="name">Product Name</label>
+                    <input
+                            type="text"
+                            id="name"
+                            name="name"
+                            placeholder="e.g. Luxe Satin Dress"
+                            required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="price">Price</label>
+                    <input
+                            type="number"
+                            id="price"
+                            name="price"
+                            placeholder="24500"
+                            required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="category_id">Category</label>
+                    <select id="category_id" name="category_id" required>
+                        <option value="">Select category</option>
+
+                        {% for category in categories %}
+                        <option value="{{ category.id }}">{{ category.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group checkbox-group">
+                    <label class="check-label">
+                        <input type="checkbox" name="is_available" checked>
+                        <span>Available in stock</span>
+                    </label>
+
+                    <label class="check-label">
+                        <input type="checkbox" name="is_featured">
+                        <span>Feature on homepage</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="images">Product Images</label>
+                <input
+                        type="file"
+                        id="images"
+                        name="images"
+                        accept="image/png, image/jpeg, image/jpg, image/webp"
+                        multiple
+                >
+                <small>You can upload multiple images. The first image becomes the main product image.</small>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea
+                        id="description"
+                        name="description"
+                        placeholder="Describe the product briefly..."
+                ></textarea>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-primary">Save Product</button>
+                <a href="{{ url_for('admin_products') }}" class="btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</section>
+
+{% endblock %}

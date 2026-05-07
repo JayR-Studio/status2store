@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="container section product-detail">
+    <div class="product-gallery">
+        <div class="product-detail-image main-product-image {% if not product.image_url %}image-fallback{% endif %}">
+            {% if product.image_url %}
+            <img src="{{ url_for('static', filename=product.image_url) }}" alt="{{ product.name }}">
+            {% else %}
+            <div class="fallback-content large">
+                <span>{{ product.name[:1] }}</span>
+                <p>No Product Image</p>
+            </div>
+            {% endif %}
+        </div>
+
+        {% if product.images %}
+        <div class="product-thumbnails">
+            {% for image in product.images %}
+            <button
+                    type="button"
+                    class="thumbnail {% if loop.first %}active{% endif %}"
+                    aria-label="Product image {{ loop.index }}"
+                    data-image="{{ image.image_url }}"
+            >
+                <img src="{{ image.image_url }}" alt="{{ product.name }}">
+            </button>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="product-detail-content">
+        <span class="eyebrow">{{ product.category.name if product.category else "Product" }}</span>
+
+        <h1>{{ product.name }}</h1>
+
+        <h2>₦{{ "{:,}".format(product.price) }}</h2>
+
+        {% if product.is_available %}
+        <p class="status available">In Stock</p>
+        {% else %}
+        <p class="status sold-out">Sold Out</p>
+        {% endif %}
+
+        <p class="product-description">
+            {{ product.description or "This product is available for order. Message the vendor on WhatsApp to confirm
+            size, color, payment, and delivery details." }}
+        </p>
+
+        <div class="product-benefits">
+            <div>Premium presentation</div>
+            <div>Easy WhatsApp order</div>
+            <div>Confirm availability before payment</div>
+        </div>
+
+        <div class="size-selector">
+            <label>Choose Size</label>
+
+            <div class="size-options">
+                <button type="button" class="size-option active" data-size="S">S</button>
+                <button type="button" class="size-option" data-size="M">M</button>
+                <button type="button" class="size-option" data-size="L">L</button>
+                <button type="button" class="size-option" data-size="XL">XL</button>
+                <button type="button" class="size-option" data-size="XXL">XXL</button>
+            </div>
+        </div>
+
+        {% if settings and settings.whatsapp_number %}
+        <a
+                class="btn-primary full-btn whatsapp-order-btn {% if not product.is_available %}restock-btn{% endif %}"
+                href="https://wa.me/{{ settings.whatsapp_number }}?text={% if product.is_available %}Hi%2C%20I%20am%20interested%20in%20this%20{{ product.name }}%2C%20Size%3A%20S{% else %}Hi%2C%20I%20am%20interested%20in%20this%20{{ product.name }}.%20Please%20notify%20me%20when%20it%20is%20back%20in%20stock.{% endif %}"
+                data-base-url="https://wa.me/{{ settings.whatsapp_number }}"
+                data-product-name="{{ product.name }}"
+                data-available="{{ 'true' if product.is_available else 'false' }}"
+                target="_blank"
+        >
+            {% if product.is_available %}
+            Order on WhatsApp
+            {% else %}
+            Ask About Restock
+            {% endif %}
+        </a>
+        {% endif %}
+        <a href="{{ url_for('catalogue') }}" class="text-link back-link">← Back to Catalogue</a>
+    </div>
+</section>
+
+{% endblock %}

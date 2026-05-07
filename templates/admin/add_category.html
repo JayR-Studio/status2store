@@ -1,0 +1,47 @@
+{% extends "admin/admin_base.html" %}
+
+{% block admin_content %}
+
+<section class="admin-page-content">
+    <div class="admin-page-heading">
+        <div>
+            <span class="eyebrow">Add Category</span>
+            <h1>New Category</h1>
+            <p>Add a new category for organizing products.</p>
+        </div>
+
+        <a href="{{ url_for('admin_categories') }}" class="btn-secondary admin-action-btn">
+            Back to Categories
+        </a>
+    </div>
+
+    <div class="admin-form-panel">
+        <form method="POST" class="admin-form">
+            <div class="form-group">
+                <label for="name">Category Name</label>
+                <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    placeholder="e.g. Club Jerseys"
+                    required
+                >
+            </div>
+
+            <div class="owner-only-note">
+                <strong>Tip</strong>
+                <p>
+                    Use clear category names customers understand easily.
+                    Examples: Dresses, Bags, Club Jerseys, Country Jerseys, Perfumes.
+                </p>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-primary">Save Category</button>
+                <a href="{{ url_for('admin_categories') }}" class="btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</section>
+
+{% endblock %}

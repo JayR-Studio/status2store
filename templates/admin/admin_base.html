@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin | {{ settings.business_name if settings else "Status2Store" }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap"
+          rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
+</head>
+<body class="admin-body theme-{{ settings.theme if settings and settings.theme else 'luxury' }}">
+
+<div class="admin-shell">
+
+    <aside class="admin-sidebar" id="adminSidebar">
+        <a href="{{ url_for('admin_dashboard') }}" class="admin-logo">
+            {{ settings.business_name if settings else "Status2Store" }}
+        </a>
+
+        <nav class="admin-nav">
+            <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('admin_products') }}">Products</a>
+            <a href="{{ url_for('admin_add_product') }}">Add Product</a>
+            <a href="{{ url_for('admin_categories') }}">Categories</a>
+            <a href="{{ url_for('admin_settings') }}">Settings</a>
+            <a href="{{ url_for('index') }}" target="_blank">View Website</a>
+            <a href="{{ url_for('admin_logout') }}" class="logout-link">Logout</a>
+        </nav>
+    </aside>
+
+    <div class="admin-main">
+        <header class="admin-topbar">
+            <div>
+                <button class="admin-menu-toggle" id="adminMenuToggle" aria-label="Open admin menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+
+            <div class="admin-topbar-text">
+                <p>Admin Panel</p>
+                <strong>{{ session.get("admin_email", "Admin") }}</strong>
+            </div>
+        </header>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-wrapper">
+            {% for category, message in messages %}
+            <div class="flash-message {{ category }}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        {% block admin_content %}{% endblock %}
+    </div>
+
+</div>
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
