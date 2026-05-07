@@ -192,6 +192,7 @@ def create_app():
             name = request.form.get("name", "").strip()
             description = request.form.get("description", "").strip()
             price = request.form.get("price", "").strip()
+            sizes = request.form.get("sizes", "").strip()
             category_id = request.form.get("category_id")
             is_available = True if request.form.get("is_available") == "on" else False
             is_featured = True if request.form.get("is_featured") == "on" else False
@@ -205,6 +206,9 @@ def create_app():
             except ValueError:
                 flash("Price must be a valid number.", "error")
                 return redirect(url_for("admin_add_product"))
+
+            if not sizes:
+                sizes = "S,M,L,XL,XXL"
 
             base_slug = slugify(name)
             slug = base_slug
@@ -242,6 +246,7 @@ def create_app():
                 is_available=is_available,
                 is_featured=is_featured,
                 image_url=image_url,
+                sizes=sizes,
             )
 
             db.session.add(product)
@@ -280,6 +285,7 @@ def create_app():
             name = request.form.get("name", "").strip()
             description = request.form.get("description", "").strip()
             price = request.form.get("price", "").strip()
+            sizes = request.form.get("sizes", "").strip()
             category_id = request.form.get("category_id")
             is_available = True if request.form.get("is_available") == "on" else False
             is_featured = True if request.form.get("is_featured") == "on" else False
@@ -293,6 +299,9 @@ def create_app():
             except ValueError:
                 flash("Price must be a valid number.", "error")
                 return redirect(url_for("admin_edit_product", product_id=product.id))
+
+            if not sizes:
+                sizes = "S,M,L,XL,XXL"
 
             image_files = request.files.getlist("images")
             saved_images = []
@@ -330,6 +339,7 @@ def create_app():
             product.category_id = category_id
             product.is_available = is_available
             product.is_featured = is_featured
+            product.sizes = sizes
 
             db.session.commit()
 

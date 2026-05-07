@@ -39,6 +39,7 @@ class Product(db.Model):
     name = db.Column(db.String(150), nullable=False)
     slug = db.Column(db.String(180), unique=True, nullable=False)
     description = db.Column(db.Text, nullable=True)
+    sizes = db.Column(db.String(200), default="S,M,L,XL,XXL")
     price = db.Column(db.Integer, nullable=False)
     image_url = db.Column(db.String(500), nullable=True)
 
