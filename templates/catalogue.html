@@ -75,7 +75,11 @@
            class="product-card {% if not product.is_available %}sold-card{% endif %}">
             <div class="product-image {% if not product.image_url %}image-fallback{% endif %}">
                 {% if product.image_url %}
+                {% if product.image_url.startswith("http") %}
+                <img src="{{ product.image_url }}" alt="{{ product.name }}">
+                {% else %}
                 <img src="{{ url_for('static', filename=product.image_url) }}" alt="{{ product.name }}">
+                {% endif %}
                 {% else %}
                 <div class="fallback-content">
                     <span>{{ product.name[:1] }}</span>

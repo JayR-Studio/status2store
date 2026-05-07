@@ -81,14 +81,20 @@
                 {% if product.images %}
                 <div class="multi-image-preview">
                     {% for image in product.images %}
+                    {% set image_src = image.image_url if image.image_url.startswith("http") else url_for('static',
+                    filename=image.image_url) %}
+
                     <div class="current-image-preview">
-                        <img src="{{ image.image_url }}" alt="{{ product.name }}">
+                        <img src="{{ image_src }}" alt="{{ product.name }}">
                     </div>
                     {% endfor %}
                 </div>
                 {% elif product.image_url %}
+                {% set product_image_src = product.image_url if product.image_url.startswith("http") else
+                url_for('static', filename=product.image_url) %}
+
                 <div class="current-image-preview">
-                    <img src="{{ product.image_url }}" alt="{{ product.name }}">
+                    <img src="{{ product_image_src }}" alt="{{ product.name }}">
                 </div>
                 {% endif %}
 

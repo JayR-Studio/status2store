@@ -6,7 +6,11 @@
     <div class="product-gallery">
         <div class="product-detail-image main-product-image {% if not product.image_url %}image-fallback{% endif %}">
             {% if product.image_url %}
+            {% if product.image_url.startswith("http") %}
+            <img src="{{ product.image_url }}" alt="{{ product.name }}">
+            {% else %}
             <img src="{{ url_for('static', filename=product.image_url) }}" alt="{{ product.name }}">
+            {% endif %}
             {% else %}
             <div class="fallback-content large">
                 <span>{{ product.name[:1] }}</span>
@@ -15,20 +19,19 @@
             {% endif %}
         </div>
 
-        {% if product.images %}
-        <div class="product-thumbnails">
-            {% for image in product.images %}
-            <button
-                    type="button"
-                    class="thumbnail {% if loop.first %}active{% endif %}"
-                    aria-label="Product image {{ loop.index }}"
-                    data-image="{{ image.image_url }}"
-            >
-                <img src="{{ image.image_url }}" alt="{{ product.name }}">
-            </button>
-            {% endfor %}
-        </div>
-        {% endif %}
+        {% for image in product.images %}
+        {% set image_src = image.image_url if image.image_url.startswith("http") else url_for('static',
+        filename=image.image_url) %}
+
+        <button
+                type="button"
+                class="thumbnail {% if loop.first %}active{% endif %}"
+                aria-label="Product image {{ loop.index }}"
+                data-image="{{ image_src }}"
+        >
+            <img src="{{ image_src }}" alt="{{ product.name }}">
+        </button>
+        {% endfor %}
     </div>
 
     <div class="product-detail-content">

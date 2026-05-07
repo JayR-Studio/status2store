@@ -519,10 +519,8 @@ def create_app():
                 filename = secure_filename(hero_image.filename)
                 filename = f"hero-{filename}"
 
-                upload_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
-                hero_image.save(upload_path)
-
-                settings.hero_image_url = f"uploads/{filename}"
+                blob_path = f"settings/hero/{filename}"
+                settings.hero_image_url = upload_to_blob(hero_image, blob_path)
 
             db.session.commit()
 

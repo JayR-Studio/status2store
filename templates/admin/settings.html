@@ -108,8 +108,11 @@
                 <label for="hero_image">Homepage Product Section Image</label>
 
                 {% if settings.hero_image_url %}
+                {% set hero_image_src = settings.hero_image_url if settings.hero_image_url.startswith("http") else
+                url_for('static', filename=settings.hero_image_url) %}
+
                 <div class="current-image-preview">
-                    <img src="{{ url_for('static', filename=settings.hero_image_url) }}" alt="Homepage section image">
+                    <img src="{{ hero_image_src }}" alt="Homepage section image">
                 </div>
                 {% endif %}
 

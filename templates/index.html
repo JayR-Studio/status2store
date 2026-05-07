@@ -29,13 +29,15 @@
         <div class="hero-visual">
             <div class="hero-image-main">
                 {% if settings and settings.hero_image_url %}
+                {% if settings.hero_image_url.startswith("http") %}
+                <img src="{{ settings.hero_image_url }}" alt="{{ settings.business_name }}">
+                {% else %}
                 <img src="{{ url_for('static', filename=settings.hero_image_url) }}" alt="{{ settings.business_name }}">
+                {% endif %}
                 {% endif %}
             </div>
             <div class="floating-card">
                 <span>New Arrival</span>
-                <strong>Luxury Satin Dress</strong>
-                <p>₦24,500</p>
             </div>
         </div>
     </div>
@@ -74,7 +76,11 @@
         <a href="{{ url_for('product_detail', slug=product.slug) }}" class="product-card">
             <div class="product-image {% if not product.image_url %}image-fallback{% endif %}">
                 {% if product.image_url %}
+                {% if product.image_url.startswith("http") %}
+                <img src="{{ product.image_url }}" alt="{{ product.name }}">
+                {% else %}
                 <img src="{{ url_for('static', filename=product.image_url) }}" alt="{{ product.name }}">
+                {% endif %}
                 {% else %}
                 <div class="fallback-content">
                     <span>{{ product.name[:1] }}</span>
