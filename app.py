@@ -5,6 +5,8 @@ from config import Config
 from models import db, Admin, Category, Product, ProductImage, SiteSettings
 from werkzeug.utils import secure_filename
 from vercel.blob import AsyncBlobClient
+from PIL import Image
+from io import BytesIO
 
 
 def create_app():
@@ -12,23 +14,56 @@ def create_app():
     app.config.from_object(Config)
     app.config["UPLOAD_FOLDER"] = os.path.join(app.root_path, "static", "uploads")
     app.config["ALLOWED_IMAGE_EXTENSIONS"] = {"png", "jpg", "jpeg", "webp"}
+    app.config["MAX_CONTENT_LENGTH"] = 8 * 1024 * 1024
 
     db.init_app(app)
 
-    async def upload_to_blob_async(file_storage, pathname):
+    def compress_image(file_storage, max_size=(1200, 1200), quality=78):
+        """
+        Compress uploaded image before saving/uploading.
+
+        - Resizes image so width/height does not exceed max_size
+        - Converts image to JPEG
+        - Reduces file size using quality setting
+        - Returns compressed bytes
+        """
+
+        image = Image.open(file_storage)
+
+        # Convert transparent images safely to RGB
+        if image.mode in ("RGBA", "P"):
+            image = image.convert("RGB")
+
+        # Resize while keeping aspect ratio
+        image.thumbnail(max_size)
+
+        output = BytesIO()
+
+        image.save(
+            output,
+            format="JPEG",
+            quality=quality,
+            optimize=True
+        )
+
+        output.seek(0)
+
+        return output
+
+    async def upload_to_blob_async(file_bytes, pathname):
         client = AsyncBlobClient()
 
         blob = await client.put(
             pathname,
-            file_storage.read(),
+            file_bytes.read(),
             access="public",
             add_random_suffix=True,
         )
 
         return blob.url
 
-    def upload_to_blob(file_storage, pathname):
-        return asyncio.run(upload_to_blob_async(file_storage, pathname))
+    def upload_to_blob(file_bytes, pathname):
+        return asyncio.run(upload_to_blob_async(file_bytes, pathname))
 
     def allowed_image(filename):
         return (
@@ -228,10 +263,13 @@ def create_app():
                         return redirect(url_for("admin_add_product"))
 
                     filename = secure_filename(image_file.filename)
-                    filename = f"{slug}-{index + 1}-{filename}"
+                    filename_without_ext = os.path.splitext(filename)[0]
+                    filename = f"{slug}-{index + 1}-{filename_without_ext}.jpg"
+
+                    compressed_image = compress_image(image_file)
 
                     blob_path = f"products/{slug}/{filename}"
-                    image_url = upload_to_blob(image_file, blob_path)
+                    image_url = upload_to_blob(compressed_image, blob_path)
 
                     saved_images.append(image_url)
 
@@ -313,10 +351,13 @@ def create_app():
                         return redirect(url_for("admin_edit_product", product_id=product.id))
 
                     filename = secure_filename(image_file.filename)
-                    filename = f"{product.slug}-{index + 1}-{filename}"
+                    filename_without_ext = os.path.splitext(filename)[0]
+                    filename = f"{product.slug}-{index + 1}-{filename_without_ext}.jpg"
+
+                    compressed_image = compress_image(image_file)
 
                     blob_path = f"products/{product.slug}/{filename}"
-                    image_url = upload_to_blob(image_file, blob_path)
+                    image_url = upload_to_blob(compressed_image, blob_path)
 
                     saved_images.append(image_url)
 
@@ -527,10 +568,13 @@ def create_app():
                     return redirect(url_for("admin_settings"))
 
                 filename = secure_filename(hero_image.filename)
-                filename = f"hero-{filename}"
+                filename_without_ext = os.path.splitext(filename)[0]
+                filename = f"hero-{filename_without_ext}.jpg"
+
+                compressed_image = compress_image(hero_image, max_size=(1600, 1000), quality=80)
 
                 blob_path = f"settings/hero/{filename}"
-                settings.hero_image_url = upload_to_blob(hero_image, blob_path)
+                settings.hero_image_url = upload_to_blob(compressed_image, blob_path)
 
             db.session.commit()
 
