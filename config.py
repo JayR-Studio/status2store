@@ -13,7 +13,13 @@ class Config:
         or "sqlite:///status2store.db"
     )
 
-    if SQLALCHEMY_DATABASE_URI and SQLALCHEMY_DATABASE_URI.startswith("postgres://"):
+    # Clean accidental spaces or wrapping quotes from env values
+    SQLALCHEMY_DATABASE_URI = SQLALCHEMY_DATABASE_URI.strip().strip('"').strip("'")
+
+    # Remove Supabase's extra pooler option if it appears
+    SQLALCHEMY_DATABASE_URI = SQLALCHEMY_DATABASE_URI.replace("&supa=base-pooler.x", "")
+
+    if SQLALCHEMY_DATABASE_URI.startswith("postgres://"):
         SQLALCHEMY_DATABASE_URI = SQLALCHEMY_DATABASE_URI.replace(
             "postgres://",
             "postgresql://",
@@ -21,3 +27,4 @@ class Config:
         )
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    
